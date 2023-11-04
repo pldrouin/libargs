@@ -1,16 +1,28 @@
-CFLAGS		+=	-fPIC
+CFLAGS		+=	
+STCOM		=	ar rcs
 
 LIB		=	libargs.so
+STLIB		=	libargs.a
+SSTLIB		=	libargs.sa
 CSRCS		=	$(wildcard *.c)
 OBJS		=	$(CSRCS:.c=.o)
+OBJSS		=	$(CSRCS:.c=.os)
 CLHD		=	$(CSRCS:.c=.h)
 ODEP		=	$(OBJS:.o=.d)
+
+all: $(SSTLIB) $(STLIB) $(LIB)
+
+$(SSTLIB): $(OBJS)
+	rm -rf $@ && $(STCOM) $@ $^
+
+$(STLIB): $(OBJSS)
+	rm -rf $@ && $(STCOM) $@ $^
 
 $(LIB): $(OBJS)
 	$(CC) $(CFLAGS) -shared $(LIBFLAGS) -o $@ $^
 
 clear: clean
-	rm -f $(LIB)
+	rm -f $(LIB) $(STLIB) $(SSTLIB)
 
 bindist: $(LIB) clean
 	rm -f $(CSRCS) Makefile
@@ -18,6 +30,7 @@ bindist: $(LIB) clean
 clean:
 	rm -f *.d
 	rm -f *.o
+	rm -f *.os
 
 $(ODEP): %.d: %.c %.h
 	@echo "Generating dependency file $@"
@@ -29,4 +42,7 @@ $(ODEP): %.d: %.c %.h
 include $(ODEP)
 
 $(OBJS): %.o: %.c
+	 $(CC) -c -o $@ $(CFLAGS) -fPIC $<
+
+$(OBJSS): %.os: %.c
 	 $(CC) -c -o $@ $(CFLAGS) $<
