@@ -1,6 +1,6 @@
 #include "args.h"
 
-int getnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param)
+int getnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param, const int maxlen)
 {
   int i=0;
   //Priority order is:
@@ -15,10 +15,13 @@ int getnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, ch
     //If reading from args
     if(nargs>=0 && *fptri==-1) {
       if(!isarg) while(args[*parc][i] == '-') i++;
-      strcpy(param,args[*parc]+i);
+      int j=strlen(args[*parc]+i);
+      j=(j>=maxlen?maxlen-1:j);
+      memcpy(param, args[*parc]+i, j);
+      param[j]=0;
       (*parc)++;
       //printf("param is '%s'\n",param);
-      return strlen(param);
+      return j;
 
     //Else if (nargs<0 && nargs>*parc) || *fptri!=-1
     } else {
@@ -38,7 +41,20 @@ int getnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, ch
 	  else if(c=='\"') brd=!brd;
 	  else param[i++]=c;
 
-	  while(((!isspace((c=fgetc(fptra[*fptri]))) && ((c != '=' && c != ':') || isarg) && c != '#') || brs || brd) && c != 0 && c != EOF) {if(c=='\'') brs=!brs; else if(c=='\"') brd=!brd; else param[i++]=c;}
+	  while(((!isspace((c=fgetc(fptra[*fptri]))) && ((c != '=' && c != ':') || isarg) && c != '#') || brs || brd) && c != 0 && c != EOF) {
+
+	    if(c=='\'')
+	      brs=!brs;
+
+	    else if(c=='\"')
+	      brd=!brd;
+
+	    else {
+	      param[i++]=c;
+
+	      if(i==maxlen-1) break;
+	    }
+	  }
 	  param[i++]=0;
 
 	  if(c == 0 || c == EOF) {
@@ -70,7 +86,20 @@ int getnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, ch
 	  else if(c=='\"') brd=!brd;
 	  else param[i++]=c;
 
-	  while(((!isspace((c=(args[0]++)[0])) && ((c != '=' && c != ':') || isarg) && c != '#') || brs || brd) && c != 0) {if(c=='\'') brs=!brs; else if(c=='\"') brd=!brd; else param[i++]=c;}
+	  while(((!isspace((c=(args[0]++)[0])) && ((c != '=' && c != ':') || isarg) && c != '#') || brs || brd) && c != 0) {
+
+	    if(c=='\'')
+	      brs=!brs;
+
+	    else if(c=='\"')
+	      brd=!brd;
+
+	    else {
+	      param[i++]=c;
+
+	      if(i==maxlen-1) break;
+	    }
+	  }
 	  param[i++]=0;
 	  //printf("param is '%s'\n",param);
 	  return i;
@@ -82,9 +111,9 @@ int getnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, ch
   return -1;
 }
 
-void safegetnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param)
+void safegetnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param, const int maxlen)
 {
-  if(getnextparam(fptra,fptri,isarg,nargs,args,parc,param)<0) {
+  if(getnextparam(fptra,fptri,isarg,nargs,args,parc,param,maxlen)<0) {
     fprintf(stderr,"Error: Missing parameter\n");
     exit(1);
   }

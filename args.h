@@ -9,13 +9,13 @@
 
 #ifdef __cplusplus
 extern "C" {
-  int getnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param);
-  void safegetnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param);
+  int getnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param, const int maxlen);
+  void safegetnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param, const int maxlen);
 }
 #endif
 
-int getnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param);
-void safegetnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param);
+int getnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param, const int maxlen);
+void safegetnextparam(FILE **fptra, int *fptri, const bool isarg, const int nargs, char const** args, int *parc, char *param, const int maxlen);
 
 void args_close_all_files_down_to_level(FILE **fptra, int *fptri, const int ptri_stop);
 
