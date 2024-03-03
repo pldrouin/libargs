@@ -39,6 +39,7 @@ int args_open_conf_file(args_info* a_h, const char* filename)
       return errno;
     }
   }
+  return 0;
 }
 
 int args_prompt(args_info* a_h, const char* prompt, char* pbuf, const int maxlen, int (*cb)(const char* param, void* ptr), void* ptr)
@@ -51,7 +52,6 @@ int args_prompt(args_info* a_h, const char* prompt, char* pbuf, const int maxlen
   const int initptri=a_h->fptri;
   const char** oldargs=a_h->args;
   int oldparc=a_h->parc;
-  int curparc;
   int plength;
   a_h->nargs=-1;
   a_h->parc=-2;
