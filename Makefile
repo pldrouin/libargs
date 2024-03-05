@@ -36,7 +36,7 @@ $(ODEP): %.d: %.c %.h
 	@echo "Generating dependency file $@"
 	@set -e; rm -f $@
 	@$(CC) -M $(CFLAGS) $< > $@.tmp
-	@sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.tmp > $@
+	@sed 's,\($*\)\.o[ :]*,\1.o \1.os $@ : ,g' < $@.tmp > $@
 	@rm -f $@.tmp
 
 include $(ODEP)
